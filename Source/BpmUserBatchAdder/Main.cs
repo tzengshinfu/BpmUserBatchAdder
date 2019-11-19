@@ -82,20 +82,18 @@ namespace BpmUserBatchAdder {
                         command.Connection = conn;
                         command.Transaction = transaction;
 
+                        var resultCell = Globals.sheet.Cells[currentRowIndex, 6];
                         var userIdCell = Globals.sheet.Cells[currentRowIndex, 1];
                         var userNameCell = Globals.sheet.Cells[currentRowIndex, 2];
                         var unitIdCell = Globals.sheet.Cells[currentRowIndex, 3];
                         var functionNameCell = Globals.sheet.Cells[currentRowIndex, 4];
-                        var approvalLevelCell = Globals.sheet.Cells[currentRowIndex, 5];
-                        var emailAccountCell = Globals.sheet.Cells[currentRowIndex, 6];
-                        var resultCell = Globals.sheet.Cells[currentRowIndex, 7];
+                        var emailAccountCell = Globals.sheet.Cells[currentRowIndex, 5];
 
                         var userId = userIdCell.Value2.HasValue() == true ? userIdCell.Value2.ToString().Trim() : "";
                         var userName = userNameCell.Value2.HasValue() == true ? userNameCell.Value2.ToString().Trim() : "";
                         var unitId = unitIdCell.Value2.HasValue() == true ? unitIdCell.Value2.ToString().Trim() : "";
                         var functionName = functionNameCell.Value2.HasValue() == true ? functionNameCell.Value2.ToString().Trim() : "";
-                        var approvalLevel = approvalLevelCell.Value2.HasValue() == true ? approvalLevelCell.Value2.ToString().Trim() : "";
-                        var emailAccount = emailAccountCell.Value2.HasValue() == true ? emailAccountCell.Value2.ToString().Trim() : "";
+                        var emailAccount = emailAccountCell.Value2.HasValue() == true ? emailAccountCell.Value2.ToString().Trim() + "@usuntek.com" : "";
 
                         if (userId.HasValue() == false) {
                             userIdCell.AddFailComment("此欄位必須有值");
@@ -109,18 +107,10 @@ namespace BpmUserBatchAdder {
                         if (functionName.HasValue() == false) {
                             functionNameCell.AddFailComment("此欄位必須有值");
                         }
-                        if (approvalLevel.HasValue() == false) {
-                            approvalLevelCell.AddFailComment("此欄位必須有值");
-                        }
-                        if (emailAccount.HasValue() == false) {
-                            emailAccountCell.AddFailComment("此欄位必須有值");
-                        }
                         if (userId.HasValue() == false
                             || userName.HasValue() == false
                             || unitId.HasValue() == false
-                            || functionName.HasValue() == false
-                            || approvalLevel.HasValue() == false
-                            || emailAccount.HasValue() == false) {
+                            || functionName.HasValue() == false) {
                             continue;
                         }
 
@@ -164,15 +154,6 @@ namespace BpmUserBatchAdder {
                         }
                         var calendarOId = calendarOIdResult.Rows[0][0].ToString();
 
-                        var approvalLevelOIdResult = Database.GetDataTable(command, "SELECT OID FROM FunctionLevel WHERE organizationOID = '{1}' AND functionLevelName LIKE '{0}%';".FormatWithArgs(approvalLevel, organizationOId));
-                        if (approvalLevelOIdResult.Rows.Count == 0) {
-                            approvalLevelCell.AddFailComment(approvalLevel + "找不到OID");
-                            resultCell.AddFailComment("失敗");
-
-                            continue;
-                        }
-                        var approvalLevelOId = approvalLevelOIdResult.Rows[0][0].ToString();
-
                         var functionDefinitionOIdResult = Database.GetDataTable(command, "SELECT OID FROM FunctionDefinition WHERE organizationOID = '{1}' AND functionDefinitionName = '{0}';".FormatWithArgs(functionName, organizationOId));
                         if (functionDefinitionOIdResult.Rows.Count == 0) {
                             functionNameCell.AddFailComment(functionName + "找不到OID");
@@ -184,59 +165,59 @@ namespace BpmUserBatchAdder {
 
                         try {
                             var insertUsersSql = @"
-                        INSERT INTO Users VALUES (
-                            '{0}',
-                            '{1}', --員工工號
-                            '{2}', --姓名
-                            1,
-                            'mlCCiMVj8+lN5SjYg0g3bp2WzdA=', --密碼(用系統預設值)
-                            NULL,
-                            '{3}',
-                            'DEFAULT', --系統預設認證方式:LDAP
-                            '{4}@usuntek.com', --信箱
-                            NULL,
-                            '{5}', --工作主機:wfs1
-                            1,
-                            NULL,
-                            NULL,
-                            0,
-                            0,
-                            '{6}', --LDAP帳號
-                            NULL,
-                            'zh_TW',
-                            NULL,
-                            1,
-                            2
-                        );
-                        ".FormatWithArgs(userOId, userId, userName, calendarOId, emailAccount, workflowServerOId, userId);
+                            INSERT INTO Users VALUES (
+                                '{0}',
+                                '{1}', --員工工號
+                                '{2}', --姓名
+                                1,
+                                'mlCCiMVj8+lN5SjYg0g3bp2WzdA=', --密碼(用系統預設值)
+                                NULL,
+                                '{3}',
+                                'DEFAULT', --系統預設認證方式:LDAP
+                                '{4}', --信箱
+                                NULL,
+                                '{5}', --工作主機:wfs1
+                                1,
+                                NULL,
+                                NULL,
+                                0,
+                                0,
+                                '{6}', --LDAP帳號
+                                NULL,
+                                'zh_TW',
+                                NULL,
+                                1,
+                                2
+                            );
+                            ".FormatWithArgs(userOId, userId, userName, calendarOId, emailAccount, workflowServerOId, userId);
 
                             var isInsertUsersOk = Database.RunSql(command, insertUsersSql);
 
                             var insertEmployeeSql = @"
-                        INSERT INTO Employee VALUES (
-                            '{0}'
-                            ,'{1}'
-                            ,'{2}'
-                            ,'{3}'
-                            ,1
-                            ,NULL
-                        );
-                        ".FormatWithArgs(employeeOId, userId, organizationOId, userOId);
+                            INSERT INTO Employee VALUES (
+                                '{0}'
+                                ,'{1}'
+                                ,'{2}'
+                                ,'{3}'
+                                ,1
+                                ,NULL
+                            );
+                            ".FormatWithArgs(employeeOId, userId, organizationOId, userOId);
 
                             var isInsertEmployeeOk = Database.RunSql(command, insertEmployeeSql);
 
                             var insertFunctionsSql = @"
-                        INSERT INTO Functions VALUES (
-                            '{0}'
-                            ,1
-                            ,'{1}'
-                            ,'{2}'
-                            ,'{3}'
-                            ,'{4}'
-                            ,NULL
-                            ,1 --為主部門
-                        );
-                        ".FormatWithArgs(functionsOId, approvalLevelOId, functionDefinitionOId, userOId, organizationUnitOId);
+                            INSERT INTO Functions VALUES (
+                                '{0}'
+                                ,1
+                                ,NULL
+                                ,'{1}'
+                                ,'{2}'
+                                ,'{3}'
+                                ,NULL
+                                ,1 --為主部門
+                            );
+                            ".FormatWithArgs(functionsOId, functionDefinitionOId, userOId, organizationUnitOId);
 
                             var isInsertFunctionsOk = Database.RunSql(command, insertFunctionsSql);
 
@@ -257,9 +238,9 @@ namespace BpmUserBatchAdder {
                             resultCell.AddFailComment(ex.Message);
                         }
                     }
-
-                    MessageBox.Show("執行完成");
                 }
+
+                MessageBox.Show("執行完成");
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);
@@ -276,14 +257,12 @@ namespace BpmUserBatchAdder {
             Globals.sheet.Cells[1, 3].Interior.ColorIndex = 15;
             Globals.sheet.Cells[1, 4].Value2 = "職稱";
             Globals.sheet.Cells[1, 4].Interior.ColorIndex = 15;
-            Globals.sheet.Cells[1, 5].Value2 = "核決權限";
+            Globals.sheet.Cells[1, 5].Value2 = "e-mail帳號";
             Globals.sheet.Cells[1, 5].Interior.ColorIndex = 15;
-            Globals.sheet.Cells[1, 6].Value2 = "e-mail帳號";
+            Globals.sheet.Cells[1, 6].Value2 = "新增結果";
             Globals.sheet.Cells[1, 6].Interior.ColorIndex = 15;
-            Globals.sheet.Cells[1, 7].Value2 = "新增結果";
-            Globals.sheet.Cells[1, 7].Interior.ColorIndex = 15;
             Globals.sheet.Name = "BPM批次新增使用者";
-            Globals.sheet.ScrollArea = "$A2:$F1048576";
+            Globals.sheet.ScrollArea = "$A2:$E1048576";
             Globals.app.ActiveWindow.SplitColumn = 0;
             Globals.app.ActiveWindow.SplitRow = 1;
             Globals.app.ActiveWindow.FreezePanes = true;
@@ -294,10 +273,10 @@ namespace BpmUserBatchAdder {
         public Bitmap GetImage(IRibbonControl control) {
             switch (control.Id) {
                 case "button_ExcelToDatabase":
-                    return new Bitmap(BpmUserBatchAdder.Properties.Resources.ExcelToDatabase);
+                    return new Bitmap(Properties.Resources.ExcelToDatabase);
 
                 case "button_NewFile":
-                    return new Bitmap(BpmUserBatchAdder.Properties.Resources.NewFile);
+                    return new Bitmap(Properties.Resources.NewFile);
 
                 default:
                     return null;
