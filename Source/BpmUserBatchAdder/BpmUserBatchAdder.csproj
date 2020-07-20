@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ExcelApi, Version=1.7.3.0, Culture=neutral, PublicKeyToken=26cf6d85ba68fa54, processorArchitecture=MSIL">
       <HintPath>..\packages\NetOffice.Excel.Net45.1.7.3.0\lib\net45\ExcelApi.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -40,7 +44,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="ExtensionMethod">
-      <HintPath>..\..\ExtensionMethod\ExtensionMethod\bin\Release\ExtensionMethod.dll</HintPath>
+      <HintPath>..\..\..\..\Workspace\ExtensionMethod\ExtensionMethod\bin\Release\ExtensionMethod.dll</HintPath>
     </Reference>
     <Reference Include="NetOffice, Version=1.7.3.0, Culture=neutral, PublicKeyToken=acf636d62c39f8f5, processorArchitecture=MSIL">
       <HintPath>..\packages\NetOffice.Core.Net45.1.7.3.0\lib\net45\NetOffice.dll</HintPath>
@@ -71,6 +75,12 @@
     <Compile Include="ExtensionMethod.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="OrganizationUnitSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OrganizationUnitSelector.designer.cs">
+      <DependentUpon>OrganizationUnitSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -89,6 +99,9 @@
     <None Include="Properties\ExcelDna.Build.props" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OrganizationUnitSelector.resx">
+      <DependentUpon>OrganizationUnitSelector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

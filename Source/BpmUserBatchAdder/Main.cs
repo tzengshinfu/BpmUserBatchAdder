@@ -9,11 +9,28 @@ using Excel = NetOffice.ExcelApi;
 
 namespace BpmUserBatchAdder {
     public class Main : IExcelAddIn {
+        private OrganizationUnitSelector organizationUnitSelector;
+
         public void AutoOpen() {
             Globals.app = new Excel.Application(null, ExcelDnaUtil.Application);
             Globals.app.WorkbookActivateEvent += WorkbookActivateEvent;
             Globals.app.SheetActivateEvent += WorksheetActivateEvent;
             Globals.app.WorkbookBeforeCloseEvent += WorkbookBeforeCloseEvent;
+            Globals.app.SheetSelectionChangeEvent += WorkSheetSelectionChangeEvent;
+        }
+
+        private void WorkSheetSelectionChangeEvent(NetOffice.COMObject Sh, Excel.Range Target) {
+            if (Target.Column == 3) {
+                if (organizationUnitSelector == null) {
+                    organizationUnitSelector = new OrganizationUnitSelector();
+                }
+
+                organizationUnitSelector.ShowDialog();
+                if (organizationUnitSelector.selectedOrganizationUnitId != "") {
+                    Target.Value = organizationUnitSelector.selectedOrganizationUnitId;
+                    organizationUnitSelector.selectedOrganizationUnitId = "";
+                }
+            }
         }
 
         private void WorkbookBeforeCloseEvent(Excel.Workbook Wb, ref bool Cancel) {
