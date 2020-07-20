@@ -1,7 +1,6 @@
 ﻿using ExcelDna.Integration;
 using ExcelDna.Integration.CustomUI;
 using System;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -73,7 +72,7 @@ namespace BpmUserBatchAdder {
 
                 Globals.sheet.UsedRange.ClearComments();
 
-                using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString)) {
+                using (var conn = new SqlConnection(Database.BpmConnStr)) {
                     conn.Open();
 
                     for (var currentRowIndex = 2; currentRowIndex <= Globals.sheet.UsedRange.Rows.Count; currentRowIndex++) {

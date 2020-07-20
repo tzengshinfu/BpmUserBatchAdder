@@ -3,6 +3,8 @@ using System.Data.SqlClient;
 
 namespace BpmUserBatchAdder {
     public static class Database {
+        public const string BpmConnStr = "Data Source=192.168.100.101;Initial Catalog=EFGP;Persist Security Info=True;User ID=sa;Password=Qwer1234";
+
         public static DataTable GetDataTable(SqlCommand command, string sqlStatement) {
             command.CommandText = sqlStatement;
             var reader = command.ExecuteReader();
@@ -18,5 +20,5 @@ namespace BpmUserBatchAdder {
 
             return command.ExecuteNonQuery() != 0 ? true : false;
         }
-    }    
+    }
 }
