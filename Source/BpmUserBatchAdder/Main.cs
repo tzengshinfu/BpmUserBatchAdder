@@ -1,6 +1,4 @@
-﻿using ExcelDna.Integration;
-using ExcelDna.Integration.CustomUI;
-using System;
+﻿using System;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -20,15 +18,17 @@ namespace BpmUserBatchAdder {
         }
 
         private void WorkSheetSelectionChangeEvent(NetOffice.COMObject Sh, Excel.Range Target) {
-            if (Target.Column == 3) {
-                if (organizationUnitSelector == null) {
-                    organizationUnitSelector = new OrganizationUnitSelector();
-                }
+            if (Globals.sheet.Name == "BPM批次新增使用者") {
+                if (Target.Column == 3) {
+                    if (organizationUnitSelector == null) {
+                        organizationUnitSelector = new OrganizationUnitSelector();
+                    }
 
-                organizationUnitSelector.ShowDialog();
-                if (organizationUnitSelector.selectedOrganizationUnitId != "") {
-                    Target.Value = organizationUnitSelector.selectedOrganizationUnitId;
-                    organizationUnitSelector.selectedOrganizationUnitId = "";
+                    organizationUnitSelector.ShowDialog();
+                    if (organizationUnitSelector.selectedOrganizationUnitId != "") {
+                        Target.Value = organizationUnitSelector.selectedOrganizationUnitId;
+                        organizationUnitSelector.selectedOrganizationUnitId = "";
+                    }
                 }
             }
         }
