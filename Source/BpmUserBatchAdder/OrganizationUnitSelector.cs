@@ -39,7 +39,8 @@ namespace BpmUserBatchAdder {
                 foreach (var organizationUnit in organizationUnitList) {
                     cbxOrganizationUnit.Items.Add(new { Text = organizationUnit.organizationUnitName + "(" + organizationUnit.id + ")", Value = organizationUnit.id });
                 }
-                cbxOrganizationUnit.SelectedIndex = 0;
+
+                cbxOrganizationUnit.SelectedIndex = organizationUnitList.Select((item, index) => new { item, index }).Where(o => o.item.id == selectedOrganizationUnitId).Select(o => o.index + 1).DefaultIfEmpty(0).First();
             }
         }
 

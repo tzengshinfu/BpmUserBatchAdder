@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ExcelDna.Integration;
+using ExcelDna.Integration.CustomUI;
+using System;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -24,9 +26,14 @@ namespace BpmUserBatchAdder {
                         organizationUnitSelector = new OrganizationUnitSelector();
                     }
 
+                    if (Target.Value2.HasValue()) {
+                        organizationUnitSelector.selectedOrganizationUnitId = Target.Value2.ToString();
+                    }
+
                     organizationUnitSelector.ShowDialog();
-                    if (organizationUnitSelector.selectedOrganizationUnitId != "") {
-                        Target.Value = organizationUnitSelector.selectedOrganizationUnitId;
+
+                    if (organizationUnitSelector.selectedOrganizationUnitId.HasValue()) {
+                        Target.Value2 = organizationUnitSelector.selectedOrganizationUnitId;
                         organizationUnitSelector.selectedOrganizationUnitId = "";
                     }
                 }
